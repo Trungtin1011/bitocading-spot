@@ -1,0 +1,23 @@
+#### VAGRANTFILE FOR CREATING VM WITH AGRO WORKFLOW 
+
+# Defines the version of vagrant (2) 
+Vagrant.configure(2) do |config| 
+    ### Configurations for virtualbox provider 
+    config.vm.provider "virtualbox" do |vb| 
+        vb.name = "trungtin_vm1" 
+        vb.cpus = 2 
+        vb.memory = "2560" 
+    end 
+    ### Configurations for virtualbox VM 
+    config.vm.box = "ubuntu/focal64" 
+    config.ssh.insert_key = false
+    config.vm.network "private_network", ip: "192.168.56.10" 
+    config.vm.hostname = "trungtin" 
+
+    ### Install Docker provisioner 
+    config.vm.provision "docker" 
+
+    ### Bootstrap Script 
+    config.vm.provision "shell", path: "init.sh" 
+
+end

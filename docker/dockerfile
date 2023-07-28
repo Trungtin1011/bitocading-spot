@@ -1,0 +1,98 @@
+### Define the base image in Dockerfile
+#FROM ubuntu          
+
+### Add label to docker image in format key=value
+#LABEL name="test_docker"        
+#LABEL email="bito@email.com"
+
+### Define environment variable
+#ENV PING_TARGET "google.com"          
+
+### Trigger the given command while creating the image
+#RUN date > /tmp/date.txt
+#RUN apt-get update
+#RUN apt-get upgrade
+#RUN apt-get install -y iputils-ping
+
+### Install Nginx
+#RUN \
+#    apt-get install -y nginx && \
+#    chown -R www-data:www-data /var/lib/nginx
+
+### Copy file from source (host machine) to the Container Path
+#COPY a.txt /tmp
+
+### Default executable command for a container
+#CMD ["bash", "-c", "ping $PING_TARGET"]
+
+###CMD ["/bin/ls" , "-la"]
+
+### ENTRYPOINT: Somewhat like CMD
+### WORKDIR: Specify a default directory to execute commands from.
+### EXPOSE: Expose a port by default.
+
+### === --- === === --- === END OF EXAMPLE 1 === --- === === --- ===
+
+
+### Create Webserver with COPY 
+# FROM nginx:alpine
+# LABEL creator="Tin"
+# COPY index.html /usr/share/nginx/html/
+# ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
+
+### Create Webserver with COPY in MULTI-STAGE build
+# FROM alpine AS stage1
+# LABEL creator="TrungTin"
+# RUN echo "Trung Tin Dep Trai Qua !" > /opt/index.html
+
+# FROM nginx:alpine
+# LABEL creator="Tin"
+# COPY --from=stage1 /opt/index.html /usr/share/nginx/html/
+# ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
+
+### === --- === === --- === END OF EXAMPLE 2 === --- === === --- ===
+
+### ENTRYPOINT Example
+#  FROM ubuntu:20.04
+#  LABEL creator="TrungTin"
+
+#  ENTRYPOINT [ "/bin/echo", "Hello !!!" ]
+
+### === --- === === --- === END OF EXAMPLE 3 === --- === === --- ===
+
+### CUSTOM NGINX IMAGE
+FROM ubuntu:bionic
+
+ENV NGINX_VERSION 1.14.0-0ubuntu1.7
+
+RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y nginx=${NGINX_VERSION}
+
+### = /var
+#WORKDIR /var   
+
+### = /var/www
+#WORKDIR www
+
+### = /var/www/html
+#WORKDIR html
+
+### Can write all in one
+WORKDIR /var/www/html/
+
+### Add index.html to the working directory (/var/www/html)
+ADD index.html ./
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+
+STOPSIGNAL SIGTERM
+
+HEALTHCHECK CMD curl localhost:80
+
+### === --- === === --- === END OF EXAMPLE 4 === --- === === --- ===
+
+
+
+

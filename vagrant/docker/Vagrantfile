@@ -1,0 +1,10 @@
+Vagrant.configure(2) do |config|
+  config.vm.box = "hashicorp/bionic64"
+  config.vm.network "forwarded_port", guest: 80, host: 8081
+  
+  ####### Provision #######
+  config.vm.provision "docker" do |d|
+    d.build_image "/vagrant", args: "-t test"
+    d.run "test", image: "test", args: "-p 80:80"
+  end
+end
