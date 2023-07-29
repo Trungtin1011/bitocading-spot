@@ -21,42 +21,42 @@
 #######################################
 ### Read csv file detail way
 #######################################
-# importing csv module
-import csv
+# # importing csv module
+# import csv
 
-# csv file name
-filename = "university_records.csv"
+# # csv file name
+# filename = "university_records.csv"
 
-# initializing the titles and rows list
-fields = []
-rows = []
+# # initializing the titles and rows list
+# fields = []
+# rows = []
 
-# reading csv file
-with open(filename, 'r') as csvfile:
-	# creating a csv reader object
-	csvreader = csv.reader(csvfile)
+# # reading csv file
+# with open(filename, 'r') as csvfile:
+# 	# creating a csv reader object
+# 	csvreader = csv.reader(csvfile)
 	
-	# extracting field names through first row
-    # .next() method returns the current row and advances the iterator to the next row
-	fields = next(csvreader)
+# 	# extracting field names through first row
+#     # .next() method returns the current row and advances the iterator to the next row
+# 	fields = next(csvreader)
 
-	# extracting each data row one by one
-	for row in csvreader:
-		rows.append(row)
+# 	# extracting each data row one by one
+# 	for row in csvreader:
+# 		rows.append(row)
 
-	# get total number of rows
-	print("Total no. of rows: %d"%(csvreader.line_num))
+# 	# get total number of rows
+# 	print("Total no. of rows: %d"%(csvreader.line_num))
 
-# printing the field names
-print('Field names are:' + ', '.join(field for field in fields))
+# # printing the field names
+# print('Field names are:' + ', '.join(field for field in fields))
 
-# printing first 5 rows
-print('\nFirst 5 rows are:\n')
-for row in rows[:5]:
-	# parsing each column of a row
-	for col in row:
-		print("%10s"%col,end=" "),
-	print('\n')
+# # printing first 5 rows
+# print('\nFirst 5 rows are:\n')
+# for row in rows[:5]:
+# 	# parsing each column of a row
+# 	for col in row:
+# 		print("%10s"%col,end=" "),
+# 	print('\n')
 
 
 #######################################
@@ -87,3 +87,9 @@ for row in rows[:5]:
      
 #     # writing the data rows
 #     csvwriter.writerows(rows)
+
+
+print('1')
+print('2')
+print('3', end='')
+print('4')
