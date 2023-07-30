@@ -10,6 +10,7 @@ class RPS:
     def __init__(self):
         print('Welcome to Rock-Paper-Scissor game!')
 
+        ### Press Windows + . to insert emoji
         self.moves: dict = {'rock': '🪨', 'paper': '📜', 'scissor': '✂️'}
         self.valid_moves: list[str] = list(self.moves.keys())
 
