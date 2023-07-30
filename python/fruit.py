@@ -11,6 +11,7 @@ def run_game():
     uname: str = input('What is your name? >> ')
     print(f'Welcome to hangman, {uname}!')
 
+    ### String contain all guessed characters
     guessed: str = ''
     
     ### Maximum of 3 tries
@@ -48,7 +49,5 @@ def run_game():
             if tries == 0:
                 print('No more tries remaining ... You lose.')
                 break
-                  
-
 
 run_game()
