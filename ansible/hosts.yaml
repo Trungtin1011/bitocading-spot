@@ -1,0 +1,38 @@
+clusters:
+  vars:
+    node01: 54.254.247.159
+    node02: 54.151.212.77
+    node03: 13.229.95.163
+  hosts:
+    broker01:
+      ansible_host: 54.254.247.159
+      ansible_port: 22
+      ansible_user: ubuntu
+      ansible_ssh_private_key_file: "~/.ssh/tin.ngotrung.pem"
+      node_id: 1
+    broker02:
+      ansible_host: 54.151.212.77
+      ansible_port: 22
+      ansible_user: ubuntu
+      ansible_ssh_private_key_file: "~/.ssh/tin.ngotrung.pem"
+      node_id: 2
+    broker03:
+      ansible_host: 13.229.95.163
+      ansible_port: 22
+      ansible_user: ubuntu
+      ansible_ssh_private_key_file: "~/.ssh/tin.ngotrung.pem"
+      node_id: 3
+
+# #playbook to test:
+# - name: Test Custom Variables
+#   hosts: '{{ target }}'
+#   vars:
+#     nid : '{{ node_id }}'
+#     pip2 : '{{ node02 }}'
+#   tasks:
+#     - name: Node ID
+#       debug:
+#         var: node_id
+#     - name: Node IP02
+#       debug:
+#         var: node02

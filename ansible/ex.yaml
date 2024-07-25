@@ -1,0 +1,98 @@
+- name: Test ansible
+  hosts: '{{ target }}'
+  vars:
+    len: "{{ groups['clusters'] | length }}"
+    listip: []
+  tasks:
+    - name: list info01
+      debug:
+        msg: '{{ hostvars[item]  }}'
+      with_items: "{{ groups['controllers'] }}"
+
+    - name: loop debug inventory hostnames
+      debug:
+        msg: "the nodes is {{ item }}"
+      with_inventory_hostnames: both
+
+    - name: Print Node_ID of each host in controllers group
+      debug:
+        var: hostvars[item].node_id
+      with_inventory_hostnames: controllers
+
+    - name: Print Hostnames in both group
+      debug:
+        msg: "the nodes is {{ item }}"
+      with_inventory_hostnames: both
+
+    - name: Update List of Node_ID
+      become: yes
+      set_fact:
+        listid: "{{ listid + [ hostvars[item].node_id ] }}"
+      with_items: "{{ groups['clusters'] }}"
+
+    - name: List ID
+      debug: var=listid
+
+    - name: Print the third element using Index Number
+      debug:
+        msg: "{{listid[2]}}"
+
+    - name: Print List ID value
+      debug
+        msg: "{{item}}:9093"
+      loop: "{{ listid  }}"
+
+
+    - name: Update Controller Quorum Voters
+      become: yes
+      copy:
+        dest: /home/ubuntu/test
+        content: |
+          voters={{ hostvars[item].node_id }}@{{ hostvars[item].pub_ip }}:9093,{{ hostvars[item].node_id }}@{{ hostvars[item].pub_ip }}:9093,{{ hostvars[item].node_id }}@{{ hostvars[item].pub_ip }}:9093'
+      with_items: "{{ groups['clusters'] }}"
+
+clusters:
+  children:
+    controllers:
+      vars:
+      hosts:
+        controller01:
+          ansible_port: 22
+          ansible_user: ubuntu
+          ansible_ssh_private_key_file: "~/.ssh/tin.ngotrung.pem"
+          node_id: 3
+        controller02:
+          ansible_port: 22
+          ansible_user: ubuntu
+          ansible_ssh_private_key_file: "~/.ssh/tin.ngotrung.pem"
+          node_id: 4
+    brokers:
+      vars:
+      hosts:
+        broker01:
+          ansible_port: 22
+          ansible_user: ubuntu
+          ansible_ssh_private_key_file: "~/.ssh/tin.ngotrung.pem"
+          node_id: 5
+        broker02:
+          ansible_port: 22
+          ansible_user: ubuntu
+          ansible_ssh_private_key_file: "~/.ssh/tin.ngotrung.pem"
+          node_id: 6
+    both:
+      vars:
+        node01: 13.228.170.247
+        node02: 18.143.186.98
+        node03: 13.229.181.200
+      hosts:
+        both01:
+          ansible_host: 13.228.170.247
+          ansible_port: 22
+          ansible_user: ubuntu
+          ansible_ssh_private_key_file: "~/.ssh/tin.ngotrung.pem"
+          node_id: 1
+        both02:
+          ansible_port: 22
+          ansible_user: ubuntu
+          ansible_ssh_private_key_file: "~/.ssh/tin.ngotrung.pem"
+          node_id: 2

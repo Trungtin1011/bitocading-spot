@@ -1,0 +1,17 @@
+- name: Remove Kafka on Ubuntu
+  hosts: all
+  tasks:   
+    - name: Delete Installation Dir
+      shell: sudo rm -rf /opt/kafka
+      register: rmdir
+      ignore_errors: yes
+
+    - name: Delete system service file
+      shell: sudo rm -rf /etc/systemd/system/kafka.service
+      register: rmsys
+      ignore_errors: yes
+
+    - name: Uninstall JRE
+      shell: sudo apt purge --autoremove default-jre -y
+      register: rmjre
+      ignore_errors: yes

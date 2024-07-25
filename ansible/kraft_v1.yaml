@@ -1,0 +1,175 @@
+### Version 1: Start kafka service in background
+
+### GUIDE
+# To run on 1st node: 
+#     sudo ansible-playbook -i hosts.yaml kraft.yaml --extra-vars "target=broker01 cid=0"
+# To run on nodes other than 1st:
+#     sudo ansible-playbook -i hosts.yaml kraft.yaml --extra-vars "target=broker01 cid=1"
+
+#========================================================================================#
+- name: Install, Configure & Start Kafka Kraft
+  hosts: '{{ target }}'
+  vars:
+    installation_dir : /opt/kafka
+    nid : '{{ node_id }}'
+    clid : '{{ cid }}'
+    curr_clid: "{{ lookup('file', '/etc/ansible/clid') }}"
+  tasks:
+    - name: Invalid Cluster ID input, end the play
+      ansible.builtin.meta: end_host
+      when:
+        - clid != "0"
+        - clid != "1"
+
+    - name: Install JRE after apt update
+      become: yes
+      apt:
+        name: 
+          - default-jre
+        state: present
+        update_cache: yes
+
+    - name: Validate JRE installation
+      shell: java -version
+      register: status_jre
+      ignore_errors: yes
+
+    - name: Check whether installation dir exists
+      stat: path={{installation_dir}}
+      register: dir
+
+    - name: Create /opt/kafka directory
+      become: yes
+      file:
+        path: "{{installation_dir}}"
+        state: directory
+        mode: 0755
+        owner: ubuntu
+      when: not dir.stat.exists
+
+    - name: Download Kafka and Unzip 
+      become: yes
+      become_user: ubuntu
+      unarchive:
+        src: "https://dlcdn.apache.org/kafka/3.5.1/kafka_2.13-3.5.1.tgz"
+        dest: "{{installation_dir}}"
+        mode: 0755
+        remote_src: yes
+      when: not dir.stat.exists
+
+    - name: Move all the files to installation Directory
+      become: yes
+      become_user: ubuntu
+      shell:
+        mv {{installation_dir}}/kafka_*/* {{installation_dir}}/.
+      when: not dir.stat.exists
+
+    - name: Check whether installation dir is empty
+      find:
+        paths: "{{installation_dir}}/"
+      register: dir_isempty
+
+    - name: Update Controller Quorum Voters
+      become: yes
+      become_user: ubuntu
+      replace:
+        path: "{{installation_dir}}/config/kraft/server.properties"
+        regexp: 'controller.quorum.voters=(.+)'
+        replace: 'controller.quorum.voters=1@{{node01}}:9093,2@{{node02}}:9093,3@{{node03}}:9093'
+      when: dir_isempty.matched > 0 
+
+    # - name: Update Listener
+    #   become: yes
+    #   become_user: ubuntu
+    #   replace:
+    #     path: "{{installation_dir}}/config/kraft/server.properties"
+    #     regexp: 'listeners=(.+)'
+    #     replace: 'listeners=PLAINTEXT://{{ansible_host}}:9092,CONTROLLER://{{ansible_host}}:9093'
+    #   when: dir_isempty.matched > 0
+
+    # - name: Update Advertised Listener
+    #   become: yes
+    #   become_user: ubuntu
+    #   replace:
+    #     path: "{{installation_dir}}/config/kraft/server.properties"
+    #     regexp: 'advertised.listeners=(.+)'
+    #     replace: 'advertised.listeners=PLAINTEXT://{{ansible_host}}:9092'
+    #   when: dir_isempty.matched > 0
+
+    - name: Update the log path
+      become: yes
+      become_user: ubuntu
+      replace:
+        path: "{{installation_dir}}/config/kraft/server.properties"
+        regexp: 'log.dirs=(.+)'
+        replace: 'log.dirs={{installation_dir}}/kraftlogs'
+      when: dir_isempty.matched > 0
+
+    - name: Update the Java Heap Size for Kafka
+      become: yes
+      become_user: ubuntu
+      replace:
+        path: "{{installation_dir}}/bin/kafka-server-start.sh"
+        regexp: 'export KAFKA_HEAP_OPTS=(".+")'
+        replace: 'export KAFKA_HEAP_OPTS="-Xmx1G -Xms512M"'
+        backup: yes
+      when: dir_isempty.matched > 0
+
+    - name: Update Node ID
+      become: yes
+      become_user: ubuntu
+      replace:
+        path: "{{installation_dir}}/config/kraft/server.properties"
+        regexp: 'node.id=(.+)'
+        replace: 'node.id={{nid}}'
+      when: dir_isempty.matched > 0
+
+    - name: First node only. Generate cluster ID
+      become: yes
+      shell: "'{{installation_dir}}'/bin/kafka-storage.sh random-uuid"
+      register: cluster_id
+      ignore_errors: yes
+      when: clid == "0"
+
+    - name: First node only. Write cluster ID to /etc/ansible/clid 
+      become: yes
+      ansible.builtin.copy:
+        content: '{{cluster_id.stdout}}'
+        dest: /etc/ansible/clid
+      delegate_to: 127.0.0.1
+      when: clid == "0"
+
+    - name: First node only. Format storage directory with cluster ID 
+      become: yes
+      shell: "'{{installation_dir}}'/bin/kafka-storage.sh format -t '{{cluster_id.stdout}}' -c '{{installation_dir}}'/config/kraft/server.properties"
+      register: storage_format
+      ignore_errors: yes
+      when: clid == "0"
+
+    - name: First node only. Format report
+      debug:
+        var: storage_format
+      when: clid == "0"
+
+    - name: Other nodes. Format storage directory with cluster ID
+      become: yes
+      shell: "'{{installation_dir}}'/bin/kafka-storage.sh format -t '{{curr_clid}}' -c '{{installation_dir}}'/config/kraft/server.properties"
+      register: storage_format
+      ignore_errors: yes
+      when: clid == "1"
+
+    - name: Other nodes. Format report
+      debug:
+        var: storage_format
+      when: clid == "1"
+
+    - name: Start Kafka servive
+      become: yes
+      become_user: ubuntu
+      shell: sudo /opt/kafka/bin/kafka-server-start.sh -daemon  /opt/kafka/config/kraft/server.properties
+      ignore_errors: yes
+
+    - name: First node only. UUID report
+      debug:
+        var: cluster_id
+      when: clid == "0"

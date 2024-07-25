@@ -1,0 +1,204 @@
+#Guide: ansible-playbook /etc/ansible/playbook.yaml -i /etc/ansible/hosts.yaml --extra-vars "target=broker03"
+# Each broker must have:
+    # 1. A unique broker.id in file `/config/server.properties` 
+    # 2. Edit `zookeeper.connect=pIP_OF_ZOOKEEPER_MANAGER:2181` in `/config/server.properties` 
+    # 3. Stop ZooKeeper service: `sudo systemctl stop zookeeper`  
+    # 4. Restart Kafka service: `sudo systemctl restart kafka`  
+
+- name: Installing Kafka on Ubuntu
+  hosts: '{{ target }}'
+  vars:
+    installation_dir : '{{ indir }}'
+    bid : '{{ broker_id }}'
+    lport : '{{ listen_port }}'
+  tasks:
+    - name: Fetch Java version
+      shell: java -version
+      register: java_version
+      ignore_errors: yes
+
+    # - name: Fetch Java version report
+    #   debug:
+    #     var: java_version.rc
+
+    - name: Install JRE after apt update
+      become: yes
+      apt:
+        name: 
+          - default-jre
+        state: present
+        update_cache: yes
+      when: java_version.rc != 0
+
+    - name: Validate JRE installation
+      shell: java -version
+      register: status_jre
+      ignore_errors: yes
+
+    # - name: JRE report
+    #   debug:
+    #     var: status_jre
+
+    # - name: Create kafka user 
+    #   become: yes
+    #   user:
+    #     name: kafka
+    #     state: present
+    #     group: sudo
+
+    - name: Check installation dir exist
+      stat: path={{installation_dir}}
+      register: dir
+
+    - name: Create /opt/kafka directory
+      become: yes
+      file:
+        path: "{{installation_dir}}"
+        state: directory
+        mode: 0755
+        owner: ubuntu
+      when: not dir.stat.exists
+
+    - name: Download Kafka and Unzip 
+      become: yes
+      become_user: ubuntu
+      unarchive:
+        src: "https://dlcdn.apache.org/kafka/3.5.1/kafka_2.13-3.5.1.tgz"
+        dest: "{{installation_dir}}"
+        mode: 0755
+        remote_src: yes
+      when: not dir.stat.exists
+
+    - name: Move all the files to parent Directory
+      become: yes
+      become_user: ubuntu
+      shell:
+        mv {{installation_dir}}/kafka_*/* {{installation_dir}}/.
+      when: not dir.stat.exists
+
+    - name: Check installation dir empty
+      find:
+        paths: "{{installation_dir}}/"
+      register: dir_isempty
+
+    - name: Check & Add Kafka topics deletion config
+      become: yes
+      become_user: ubuntu
+      lineinfile:
+        path: "{{installation_dir}}/config/server.properties"
+        line: "delete.topic.enable = true"
+        state: present
+        backup: yes
+      register: check_topic
+      when: dir_isempty.matched > 0
+
+    - name: Update the log path
+      become: yes
+      become_user: ubuntu
+      replace:
+        path: "{{installation_dir}}/config/server.properties"
+        regexp: 'log.dirs=(.+)'
+        replace: 'log.dirs={{installation_dir}}/logs'
+        backup: yes
+      when: dir_isempty.matched > 0
+
+    - name: Update Broker ID
+      become: yes
+      become_user: ubuntu
+      replace:
+        path: "{{installation_dir}}/config/server.properties"
+        regexp: 'broker.id=(.+)'
+        replace: 'broker.id={{bid}}'
+        backup: yes
+      when: dir_isempty.matched > 0
+
+    - name: Update the Java Heap Size for Kafka
+      become: yes
+      become_user: ubuntu
+      replace:
+        path: "{{installation_dir}}/bin/kafka-server-start.sh"
+        regexp: 'export KAFKA_HEAP_OPTS=(".+")'
+        replace: 'export KAFKA_HEAP_OPTS="-Xmx520M -Xms256M"'
+        backup: yes
+      when: dir_isempty.matched > 0
+
+    - name: Check if ZooKeeper service file exists
+      stat:
+        path: /etc/systemd/system/zookeeper.service
+      register: zk_file_status
+
+    - name: Create systemd Service file for ZooKeeper with Copy module
+      become: yes
+      copy:
+        dest: /etc/systemd/system/zookeeper.service
+        content: |
+          [Unit]
+          Requires=network.target remote-fs.target
+          After=network.target remote-fs.target
+
+          [Service]
+          Type=simple
+          User=ubuntu
+          ExecStart={{installation_dir}}/bin/zookeeper-server-start.sh {{installation_dir}}/config/zookeeper.properties
+          ExecStop={{installation_dir}}/bin/zookeeper-server-stop.sh
+          Restart=on-abnormal
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: 0755
+      when: not zk_file_status.stat.exists
+
+    - name: Check if Kafka service file exists
+      stat:
+        path: /etc/systemd/system/kafka.service
+      register: k_file_status
+
+    - name: Create systemd Service file for Kafka with Copy module
+      become: yes
+      copy:
+        dest: /etc/systemd/system/kafka.service
+        content: |
+          [Unit]
+          Requires=zookeeper.service
+          After=zookeeper.service
+
+          [Service]
+          Type=simple
+          User=ubuntu
+          ExecStart=/bin/sh -c '{{installation_dir}}/bin/kafka-server-start.sh {{installation_dir}}/config/server.properties > {{installation_dir}}/kafkaservice.log 2>&1'
+          ExecStop={{installation_dir}}/bin/kafka-server-stop.sh
+          Restart=on-abnormal
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: 0755
+      when: not k_file_status.stat.exists
+
+    - name: Start Kafka & ZooKeeper Services
+      tags: startservices
+      become: yes
+      systemd:
+        name: '{{item}}'
+        state: started
+        enabled: yes
+      with_items:
+        - "kafka"
+        - "zookeeper"
+
+    # - name: Validating if zookeeper is up and listening on port 2181
+    #   wait_for:
+    #     host: localhost
+    #     port: 2181
+    #     delay: 10
+    #     timeout: 30
+    #     state: started
+    #     msg: "Zookeeper not seem to be running"
+
+    # - name: Validating if Kafka is up and listening on port 2181
+    #   wait_for:
+    #     host: localhost
+    #     port: 9092
+    #     delay: 10
+    #     timeout: 30
+    #     state: started
+    #     msg: "Zookeeper not seem to be running"
