@@ -1,0 +1,135 @@
+### ZooKeeper producer
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zk-perf-producer
+  namespace: apache-kafka-t01
+  labels:
+    app: zk-perf-producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zk-perf-producer
+  template:
+    metadata:
+      labels:
+        app: zk-perf-producer
+    spec:
+      containers:
+      - name: zk-perf-producer
+        args:
+        - publish_kafka
+        - --brokers=poc-kafka-cluster-default-kafka-bootstrap:9092
+        - --topic=topic-test-2
+        - --number_of_producers=10
+        - --messages_per_second=10000
+        - --duration_in_minute=2
+        - --prometheus_namespace=topic-test-2
+        - --prometheus_port=2112
+        image: default-route-openshift-image-registry.apps.poccbp-app01.north.vib.corp/test/kafka-perf-test:v2.0.0
+        imagePullPolicy: Always
+        ports:
+        - name: producer
+          containerPort: 2112
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/kafka-worker
+                    operator: In
+                    values:
+                      - ''
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/kafka-worker
+          value: reserved
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: zk-producer-metrics
+  namespace: apache-kafka-t01
+spec:
+  namespaceSelector:
+    matchNames:
+    - apache-kafka-t01
+  podMetricsEndpoints:
+  - path: /metrics
+    port: producer
+  selector:
+    matchLabels:
+      app: zk-perf-producer
+---
+### ZooKeeper consumer
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zk-perf-consumer
+  namespace: apache-kafka-t01
+  labels:
+    app: zk-perf-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zk-perf-consumer
+  template:
+    metadata:
+      labels:
+        app: zk-perf-consumer
+    spec:
+      containers:
+      - name: zk-perf-consumer
+        args:
+        - consume_kafka
+        - --brokers=poc-kafka-cluster-default-kafka-bootstrap:9092
+        - --topic=topic-test-2
+        - --number_of_consumers=1
+        - --prometheus_namespace=topic-test-2
+        - --prometheus_port=2112
+        image: default-route-openshift-image-registry.apps.poccbp-app01.north.vib.corp/test/kafka-perf-test:v2.0.0
+        imagePullPolicy: Always
+        ports:
+        - name: consumer
+          containerPort: 2112
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/kafka-worker
+                    operator: In
+                    values:
+                      - ''
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/kafka-worker
+          value: reserved
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: zk-consumer-metrics
+  namespace: apache-kafka-t01
+spec:
+  namespaceSelector:
+    matchNames:
+    - apache-kafka-t01
+  podMetricsEndpoints:
+  - path: /metrics
+    port: consumer
+  selector:
+    matchLabels:
+      app: zk-perf-consumer

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment                # Identify resource type
+metadata:                       # Include deployment name & labels
+  name: deployment-name         #
+  labels:                       # 
+    app: deployment-name        #
+    name: deployment-name       #
+spec:                           # Deployment specification contains deployment configurations
+  replicas: 3                   # Number of desired replicas of the container.
+  revisionHistoryLimit: 5
+  selector:                     #
+    matchLabels:                #
+      app: deployment-name      #
+  strategy:                     #
+    type: RollingUpdate         # Deployment strategy to use when updating pods.
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:                     #
+    metadata:                   #
+      labels:                   #
+        app: deployment-name    #
+        name: deployment-name   #
+    spec:                       # A list of pod definitions for each new container created by the deployment
+      containers:               #
+        - name: container-name  # Prefix for the names of the pods created.
+          image: image          # Container image used to create new pod
+          env:
+          resources:            #
+            limits:             #
+              cpu: 250m         #
+              memory: 256Mi     #
+            requests:           #
+              cpu: 125m         #
+              memory: 128Mi     #

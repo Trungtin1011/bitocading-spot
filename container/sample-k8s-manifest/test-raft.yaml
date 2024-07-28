@@ -1,0 +1,135 @@
+### KRAFT producer
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: raft-perf-producer
+  namespace: kafka-kraft
+  labels:
+    app: raft-perf-producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: raft-perf-producer
+  template:
+    metadata:
+      labels:
+        app: raft-perf-producer
+    spec:
+      containers:
+      - name: raft-perf-producer
+        args:
+        - publish_kafka
+        - --brokers=poc-kafka-kraft-kafka-bootstrap:9092
+        - --topic=kraft-topic-000
+        - --number_of_producers=10
+        - --messages_per_second=10000
+        - --duration_in_minute=2
+        - --prometheus_namespace=kraft-topic-000
+        - --prometheus_port=2112
+        image: default-route-openshift-image-registry.apps.poccbp-app01.north.vib.corp/test/kafka-perf-test:v2.0.0
+        imagePullPolicy: Always
+        ports:
+        - name: producer
+          containerPort: 2112
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/kafka-worker
+                    operator: In
+                    values:
+                      - ''
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/kafka-worker
+          value: reserved
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: raft-producer-metrics
+  namespace: kafka-kraft
+spec:
+  namespaceSelector:
+    matchNames:
+    - kafka-kraft
+  podMetricsEndpoints:
+  - path: /metrics
+    port: producer
+  selector:
+    matchLabels:
+      app: raft-perf-producer
+---
+### KRAFT consumer
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: raft-perf-consumer
+  namespace: kafka-kraft
+  labels:
+    app: raft-perf-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: raft-perf-consumer
+  template:
+    metadata:
+      labels:
+        app: raft-perf-consumer
+    spec:
+      containers:
+      - name: raft-perf-consumer
+        args:
+        - consume_kafka
+        - --brokers=poc-kafka-kraft-kafka-bootstrap:9092
+        - --topic=kraft-topic-000
+        - --number_of_consumers=5
+        - --prometheus_namespace=kraft-topic-000
+        - --prometheus_port=2112
+        image: default-route-openshift-image-registry.apps.poccbp-app01.north.vib.corp/test/kafka-perf-test:v2.0.0
+        imagePullPolicy: Always
+        ports:
+        - name: consumer
+          containerPort: 2112
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/kafka-worker
+                    operator: In
+                    values:
+                      - ''
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/kafka-worker
+          value: reserved
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: raft-consumer-metrics
+  namespace: kafka-kraft
+spec:
+  namespaceSelector:
+    matchNames:
+    - kafka-kraft
+  podMetricsEndpoints:
+  - path: /metrics
+    port: consumer
+  selector:
+    matchLabels:
+      app: raft-perf-consumer
