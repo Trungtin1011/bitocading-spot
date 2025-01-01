@@ -1,6 +1,6 @@
 import boto3, ipaddress
 
-aws_accounts = ["963626856932"] #, "656181946651"]
+aws_accounts = [""] #, ""]
 
 def role_arn_to_session(**args):
     client = boto3.client("sts")
@@ -48,8 +48,3 @@ def main():
     ip = input("Enter IPv4 address: ")
     fetch_vpc_from_ip(ip)
 main()
-
-
-
-
-
