@@ -1,5 +1,4 @@
-# export RDSs="database-1,aws-sg-poc-postgresql" 
-# export EC2s="i-08426f77ec0ffc042,i-00822e3324879c535"
+
 
 import boto3, os, botocore
 

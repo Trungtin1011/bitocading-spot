@@ -1,0 +1,2 @@
+# inventory
+Sample Python application.
