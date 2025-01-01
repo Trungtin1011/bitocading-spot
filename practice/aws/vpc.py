@@ -19,7 +19,7 @@ ec2_client = session.client("ec2")
 subnet_ids = []
 for vpc in ec2_resource.vpcs.all():
     # here you can choose which subnet based on the id
-    if vpc.id == 'vpc-0e84b8789fa69d0f8':
+    if vpc.id == 'vpc-xxx':
         for subnet in vpc.subnets.all():
             subnet_ids.append(subnet.id)
 # the result of this call has the data you're looking for
