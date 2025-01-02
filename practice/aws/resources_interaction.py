@@ -19,6 +19,7 @@ def list_available_services(profile:str):
     logger.error(e.args[0])
     return e.args[0]
 
+
 # Check if provided IP is a valid private IP
 def is_valid_private_ip(ip:str):
   try:
@@ -26,6 +27,7 @@ def is_valid_private_ip(ip:str):
   except Exception as e:
     logger.error(e.args[0])
     return e.args[0]
+
 
 # Check if provided AWS VPC ID is in valid format
 def is_valid_vpc_id(vpc:str):
@@ -36,6 +38,8 @@ def is_valid_vpc_id(vpc:str):
     logger.error(e.args[0])
     return e.args[0]
 
+
+# Get Subnet and VPC ID from provided IP address
 def detect_vpc_from_ip(ip:str):
   try:
     if is_valid_private_ip(ip):
@@ -57,6 +61,7 @@ def detect_vpc_from_ip(ip:str):
     logger.error(e.args[0])
     return e.args[0]
 
+
 # List all S3 buckets in form of ['bucket']
 def list_buckets():
   try:
@@ -67,6 +72,7 @@ def list_buckets():
     logger.error(e.args[0])
     return e.args[0]
 
+
 # List all objects from a bucket in form of ['object']
 def list_bucket_objects(bucket:str):
   try:
@@ -74,6 +80,7 @@ def list_bucket_objects(bucket:str):
   except Exception as e:
     logger.error(e.args[0])
     return e.args[0]
+
 
 # List all tags from a bucket in form of ['key: value']
 def list_bucket_tags(bucket:str):
@@ -83,6 +90,7 @@ def list_bucket_tags(bucket:str):
     logger.error(e.args[0])
     return e.args[0]
 
+
 # List S3 bucket through VPC endpoint URL (eg. "https://bucket.vpce-xxx-yyyy.s3.ap-southeast-1.vpce.amazonaws.com")
 def list_bucket_through_vpce(region:str,endpoint:str):
   try:
@@ -91,6 +99,7 @@ def list_bucket_through_vpce(region:str,endpoint:str):
   except Exception as e:
     logger.error(e.args[0])
     return e.args[0]
+
 
 # Return a dict in format {"instance-id": {Tags} }
 def get_ec2_instance_tags():
@@ -115,6 +124,7 @@ def get_ec2_instance_tags():
   except Exception as e:
     logger.error(e.args[0])
     return e.args[0]
+
 
 # Check if each EC2 instance contains a specific tag, return list of result
 def check_ec2_tag_comply(tag:str):

@@ -1,3 +1,51 @@
+import boto3
+
+client = boto3.client("secretsmanager", region_name=REGION_NAME)
+response = client.get_secret_value(SecretId=SECRET_NAME)
+secret_data = json.loads(response["SecretString"])
+
+dynamodb = boto3.client("dynamodb")
+put_response = dynamodb.put_item(
+        TableName="ZipcodeWeather",
+        Item={
+            "Zipcode": {"S": "90210"},
+            'TempF' : {'N': '62'}
+        })
+
+scan_response = dynamodb.scan(TableName="ZipcodeWeather")
+print(scan_response)
+
+query_response = dynamodb.query(
+    TableName="ZipcodeWeather",
+    KeyConditionExpression="Zipcode = :zipcode",
+    ExpressionAttributeValues={
+        ":zipcode": {"S": "90210"}
+    })
+
+##
+sqs = boto3.client("sqs")   # Establishes a connection to Amazon SQS by using the boto3.client() function
+queue_url = 'BackgroundCheckApp'    # sets the URL of the queue to be BackgroundCheckApp.
+
+while True:
+    print("Retrieving messages")
+    # receive up to two messages at a time from the queue, and it waits up to 7 seconds for a message to become available.
+    response = sqs.receive_message(
+        QueueUrl=queue_url,
+        MaxNumberOfMessages=2,
+        WaitTimeSeconds=7,
+    )
+
+    if "Messages" in response:
+        for message in response["Messages"]:
+            # do your processing
+            print(f"Message body: {message['Body']}")
+            print(f"Removing message: {message['MessageId']}")
+            sqs.delete_message(
+                QueueUrl=queue_url,
+                ReceiptHandle=message['ReceiptHandle']
+            )
+
+###
 import boto3, ipaddress
 
 aws_accounts = [""] #, ""]

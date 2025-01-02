@@ -1,44 +1,54 @@
-from git import Repo
-import zipfile
-import pathlib
-import boto3
-    
+import botocore, boto3, os, logging, json
+import zipfile, pathlib
+
+# Add this line before importing git to avoid error "Bad git executable"
+os.environ["GIT_PYTHON_REFRESH"] = "quiet"
+import git
+
+# Define Git executable to use from git-lambda layer
+os.environ["GIT_PYTHON_GIT_EXECUTABLE"] = "/opt/bin/git"
+
+# Init logger
+logging.basicConfig(format="[%(levelname)s]\t%(message)s",level=logging.INFO)
+logger = logging.getLogger()
+
+
+# Clone git repository and upload repo zip to S3
+def cloneRepo(sourceRepo:str, downloadDir:str, branch:str, bucket:str):
+  try:
+    git.Repo.clone_from(sourceRepo, downloadDir, branch=branch)
+    logger.info(f"Repo cloned to {downloadDir}")
+    #os.system(f'/bin/ls {downloadDir}/')
+    os.system(f'rm -rf {downloadDir}/.git*')
+  except Exception as e:
+      logger.info(f"Function get error at: {e}")
+
+  # Build zip file from a directory
+  directory = pathlib.Path(downloadDir)
+  with zipfile.ZipFile(f"{downloadDir}.zip", mode="w") as archive:
+    for file_path in directory.rglob("*"):
+      archive.write(file_path, arcname=file_path.relative_to(directory))
+  with zipfile.ZipFile(f"{downloadDir}.zip", mode="r") as archive:
+      archive.printdir()
+
+  # Upload zip file to S3
+  s3_upload = boto3.client('s3').put_object(
+      Bucket=bucket,
+      Key="repositories",
+      Body=f"{downloadDir}.zip",
+      ContentType='application/zip'
+  )
+  logger.info(json.dumps(s3_upload))
+
+  return {
+      'statusCode': s3_upload['ResponseMetadata']['HTTPStatusCode'],
+      'body': json.dumps(s3_upload)
+  }
+
 
 def main():
-
-    #repo = Repo.clone_from('git@ssh.dev.azure.com:v3/trungtinzz/cicd-integration/cicd-integration',
-    #                       './cicd-integration', branch='main')
-    
-    # Build zip file from multiple files
-    files = ["ec2.py", "s3.py"]
-    with zipfile.ZipFile("files.zip", mode="w") as archive:
-        for filename in files:
-            archive.write(filename)
-
-    try:
-        with zipfile.ZipFile("files.zip") as archive:
-            archive.printdir()
-    except zipfile.BadZipFile as error:
-        print(error)
-    
-    s3 = boto3.client('s3')
-
-    # This command = aws s3 cp files.zip s3://tin-tf-bucket-01/files-cp, which will keep the file as correct .ZIP 
-    res = s3.put_object(Bucket='tin-tf-bucket-01',
-            Key="files-boto",
-            Body=open("files.zip", 'rb'),
-            ContentType='application/zip'
-        )
-
-#    # Build zip file from a directory
-#    directory = pathlib.Path("./cicd-integration/")
-#    with zipfile.ZipFile("directory.zip", mode="w") as archive:
-#        for file_path in directory.iterdir():
-#            archive.write(file_path, arcname=file_path.name)
-#    with zipfile.ZipFile("directory.zip", mode="r") as archive:
-#        archive.printdir()
-
-    return 1
-
-main()
-
+  ## Print all current Lambda layers
+  #os.system('/bin/ls /opt/')
+  ## Check PATH and GIT_PYTHON_GIT_EXECUTABLE to debug GitPython
+  #print(os.environ["PATH"])
+  #print(os.environ["GIT_PYTHON_GIT_EXECUTABLE"])
