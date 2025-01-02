@@ -156,12 +156,3 @@ def check_ec2_tag_exist(instance_id:str,tag:str):
   except Exception as e:
     logger.error(e.args[0])
     return e.args[0]
-
-#print(is_valid_vpc_id("vpc-0e84b8789fa69d0f8"))
-
-#print(is_valid_vpc_id("vpc-sdfsdf"))
-
-
-print(detect_vpc_from_ip("10.1.1.10"))
-
-# print(detect_vpc_from_ip("100.64.0.10"))
