@@ -49,7 +49,7 @@
 # #res = {n ** 2 for n in nums if n % 2 == 0}
 # for n in set(nums):
 #     if n % 2 == 0:
-#         res.add(n ** 2)   
+#         res.add(n ** 2)
 # print(res)
 # ex = ValueError("Name must be at least 5 charactes in length")
 # raise ex
@@ -83,9 +83,9 @@
 # def sq_numbers(n):
 #     for i in range(1, n+1):
 #         yield i*i
-  
+
 # a = sq_numbers(3)
-  
+
 # print("The square of numbers are : ")
 # print(next(a))
 # print(next(a))
@@ -126,13 +126,13 @@
 # with open('test.csv') as f:
 #     print(f.readlines())
 
-# import math 
+# import math
 # help(math.factorial)
 
 # import datetime as dt
 # dt1 = dt.datetime.utcnow()
 # dt2 = dt.datetime.fromisoformat("2023-01-01T00:00:00")
-# tdel = dt1 - dt2 
+# tdel = dt1 - dt2
 # print(tdel)
 # print(tdel.days * 24 * 60 * 60 + tdel.seconds + tdel.microseconds / (10 ** 6))
 # print(tdel.total_seconds())
@@ -155,10 +155,10 @@
 # import csv
 # with open('test.csv') as f:
 #     reader = csv.reader(
-#         f, 
-#         delimiter='|', 
-#         quotechar='"', 
-#         escapechar="\\", 
+#         f,
+#         delimiter='|',
+#         quotechar='"',
+#         escapechar="\\",
 #         skipinitialspace=True
 #     )
 #     for row in reader:
@@ -226,7 +226,7 @@ import csv
 # #           Phil-Clinton-10/27/97-Dump
 # #           Nick-'O''Jones'-10/27/89-hihi
 
-# import random as r 
+# import random as r
 # system_seed = r.random()
 # r.seed(4)
 # custom_seed = r.random()
@@ -237,14 +237,14 @@ import csv
 # rr1 = r.randrange(1,16,2)
 # rr2 = r.randrange(8)
 # ri = r.randint(2,11)
-# rf1 = r.random() 
+# rf1 = r.random()
 # rf2 = r.uniform(2, 10)
 # print(f'Randrange1() = {rr1}, Randrange2() = {rr2}, Randint() = {ri}')
 # print(f'Random() = {rf1}, Uniform() = {rf2}')
 # # Output =  Randrange1() = 11, Randrange2() = 2, Randint() = 10
 # #           Random() = 0.2174514771120024, Uniform() = 6.93810522123773
 
-# import random 
+# import random
 # l = [1, 2, 3, 4, 5, 7, 9, 12]
 # w = [1, 1, 1, 1, 1, 1, 1, 4]
 # for _ in range(6):
@@ -273,7 +273,7 @@ import csv
 #     def __init__(self, n):
 #         self.n = n
 #         print("Recursive function initialized with n =", n)
- 
+
 #     def run(self, n=None):
 #         if n is None:
 #             n = self.n
@@ -281,16 +281,16 @@ import csv
 #             return
 #         print("Running recursive function with n =", n)
 #         self.run(n-1)
- 
+
 #     def __del__(self):
 #         print("Recursive function object destroyed")
- 
+
 # # Create an object of the class
 # obj = RecursiveFunction(7)
- 
+
 # # Call the recursive function
 # obj.run()
- 
+
 # # Destroy the object
 # del obj
 
@@ -311,13 +311,13 @@ import csv
 #         self.expType = eType
 #         self.points = point
 #         self.expStatus = status
-    
+
 #     def increaseN(self, num):
 #         self.dataCount += num
-    
+
 #     def changeExpStatus(self, status):
 #         self.expStatus = status
-    
+
 #     def __str__(self):
 #         return 'Experiment type: ' + self.expType + ' has ' + str(self.dataCount) + ' data points.'
 
@@ -327,7 +327,7 @@ import csv
 # test.increaseN(10)
 # print(test.dataCount)
 
-# import matplotlib.pyplot as plt 
+# import matplotlib.pyplot as plt
 # print(plt.plot(3,4,'o'))
 
 
@@ -383,7 +383,7 @@ import csv
 #         print(line.strip())
 #     print(num_line)
 
-# def test(a:int, b:bool=True, dict1:dict={2:3, 4:5, 6:8}): 
+# def test(a:int, b:bool=True, dict1:dict={2:3, 4:5, 6:8}):
 #     if b == True:
 #         new:list = list(dict1.keys())
 #         print(new)
@@ -398,7 +398,7 @@ import csv
 # test(5,dict1={5:4, 2:1})
 
 ######################
-# # Given the same dictionary, medals, now sort by the medal count. 
+# # Given the same dictionary, medals, now sort by the medal count.
 # # Save the three countries with the highest medal count to the list, top_three.
 # ######################
 # def get_key(val, my_dict:dict):
@@ -416,8 +416,8 @@ import csv
 # print(top_three)
 
 # ######################
-# # We have provided the dictionary groceries. 
-# # You should return a list of its keys, 
+# # We have provided the dictionary groceries.
+# # You should return a list of its keys,
 # # but they should be sorted by their values, from highest to lowest.
 # #  Save the new list as most_needed.
 # ######################
@@ -427,12 +427,12 @@ import csv
 # ks = groceries.keys()
 # most_needed = sorted(ks, key=lambda x:g(x,groceries), reverse = True)
 
-# #Create a function called last_four that takes in an ID number 
-# # and returns the last four digits. 
-# # For example, the number 17573005 should return 3005. 
-# # Then, use this function to sort the list of ids stored in 
-# # the variable, ids, from lowest to highest. Save this sorted list in 
-# # the variable, sorted_ids. Hint: Remember that only strings can be indexed, 
+# #Create a function called last_four that takes in an ID number
+# # and returns the last four digits.
+# # For example, the number 17573005 should return 3005.
+# # Then, use this function to sort the list of ids stored in
+# # the variable, ids, from lowest to highest. Save this sorted list in
+# # the variable, sorted_ids. Hint: Remember that only strings can be indexed,
 # # so conversions may be needed.
 # ids = [17573005, 17572342, 17579000, 17570002, 17572345, 17579329]
 # def last_four(x):
@@ -441,13 +441,13 @@ import csv
 # sorted_ids = sorted(ids, key=last_four )
 # print(sorted_ids)
 
-# #$Sort the list ids by the last four digits of each id. 
-# # Do this using lambda and not using a defined function. 
+# #$Sort the list ids by the last four digits of each id.
+# # Do this using lambda and not using a defined function.
 # # Save this sorted list in the variable sorted_id.
 # ids = [17573005, 17572342, 17579000, 17570002, 17572345, 17579329]
 # sorted_id = sorted(ids, key=lambda x: str(x)[-4:])
 
-# #Sort the following list by each element’s second letter a to z. 
+# #Sort the following list by each element’s second letter a to z.
 # #Do so by using lambda.
 # #Assign the resulting value to the variable lambda_sort.
 # ex_lst = ['hi', 'how are you', 'bye', 'apple', 'zebra', 'dance']
@@ -468,6 +468,7 @@ import csv
 # print(y)
 # print(z)
 import re
-x = 'From: Using the : character'
-y = re.findall('^F.+:', x)
+
+x = "From: Using the : character"
+y = re.findall("^F.+:", x)
 print(y)

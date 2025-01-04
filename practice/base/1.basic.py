@@ -5,7 +5,7 @@ def area():
     while True:
         try:
             a: float = float(input("Input number A >> "))
-            if a <=0:
+            if a <= 0:
                 raise ValueError
             b: float = float(input("Input number B >> "))
             if b <= 0:
@@ -14,17 +14,18 @@ def area():
         except ValueError as e:
             print("Please input a valid number!")
             continue
-    res = a*b
-    print("Area = {:.2f}".format(res)) 
+    res = a * b
+    print("Area = {:.2f}".format(res))
+
 
 #############################################################################################
 # Create a program that takes a user's name and age as input and prints a greeting message
 #############################################################################################
 def greet():
-    name:str = input("Enter your name >> ")   
+    name: str = input("Enter your name >> ")
     while True:
         try:
-            age:int = int(input("Please enter your age >> "))
+            age: int = int(input("Please enter your age >> "))
             if age <= 0:
                 raise ValueError
             break
@@ -32,6 +33,7 @@ def greet():
             print("Please input a valid age!")
             continue
     print(f"Greeting {name} {age} years old")
+
 
 #############################################################################################
 # Write a program to check if a number is even or odd
@@ -51,22 +53,26 @@ def iseven():
             print("Please enter the valid number!")
             continue
 
+
 #############################################################################################
 # Given a list of numbers, find the maximum and minimum values
 #############################################################################################
 def minmax(nums: list):
     llen: int = len(nums)
     max: int = 0
-    for i in range(0,llen):
+    for i in range(0, llen):
         if nums[i] > max:
-            max = nums[i]  
+            max = nums[i]
     min: int = max
-    for i in range(0,llen):
+    for i in range(0, llen):
         if nums[i] <= min:
             min = nums[i]
     print(f"Max = {max}, Min = {min}")
-#num: list = [2,4,3,-7,6,5,9,3,4]
-#minmax(num)
+
+
+# num: list = [2,4,3,-7,6,5,9,3,4]
+# minmax(num)
+
 
 ############################################################################################
 # Create a Python function to check if a given string is a palindrome
@@ -84,6 +90,7 @@ def isPalin():
     else:
         print("The string is not a palindrome")
 
+
 ############################################################################################
 # Given a list of integers, find the sum of all positive numbers
 ############################################################################################
@@ -92,9 +99,11 @@ def sum(lint: list):
     for i in lint:
         if i > 0:
             res += float(i)
-    print("Sum of all positive numbers is >> {:.2f}".format(res)) 
+    print("Sum of all positive numbers is >> {:.2f}".format(res))
 
-#sum([2,1,4,-5,0,7,-3,6,-8])
+
+# sum([2,1,4,-5,0,7,-3,6,-8])
+
 
 ############################################################################################
 # Create a program that takes a sentence as input and counts the number of words in it
@@ -102,17 +111,21 @@ def sum(lint: list):
 def wordCount(st: str):
     slen: int = len(st)
     res: int = 0
-    if st[0].isalpha() == True or st[0].isalnum() == True: 
+    if st[0].isalpha() == True or st[0].isalnum() == True:
         res = 1
-    for i in range(0,slen):
-        if (st[i].isalpha() == True and st[i-1] == ' ') or (st[i].isalnum() == True and st[i-1] == ' '):
+    for i in range(0, slen):
+        if (st[i].isalpha() == True and st[i - 1] == " ") or (
+            st[i].isalnum() == True and st[i - 1] == " "
+        ):
             res += 1
     print(f"Number of words: {res}")
 
-#wordCount("   2   Trung Tin Ngo   1011    2000      ___ hihi    ")
+
+# wordCount("   2   Trung Tin Ngo   1011    2000      ___ hihi    ")
+
 
 ############################################################################################
-#Implement a program that swaps the values of two variables
+# Implement a program that swaps the values of two variables
 ############################################################################################
 def swap(a, b):
     c = a
@@ -120,12 +133,5 @@ def swap(a, b):
     b = c
     return a, b
 
-print(swap(7,9))
 
-
-
-
-
-
-
-
+print(swap(7, 9))

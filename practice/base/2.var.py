@@ -5,18 +5,23 @@ def aversum(lnum: list[float]):
     # sumr: float = sum(lnum)
     # avg: float = sumr / len(lnum)
     # print(f"Sum = {sumr}")
-    # print("Average = {:.2f}".format(avg)) 
+    # print("Average = {:.2f}".format(avg))
 
     return sum(lnum), sum(lnum) / len(lnum)
 
-#print(aversum([1,3,-7,4.4,9,2,0,8,7.5]))
+
+# print(aversum([1,3,-7,4.4,9,2,0,8,7.5]))
+
 
 #############################################################################################
 # Create a function to reverse a given string
 #############################################################################################
 def reverseStr(string: str):
     return string[::-1]
-#print(reverseStr("ogN gnurT niT"))
+
+
+# print(reverseStr("ogN gnurT niT"))
+
 
 #############################################################################################
 # Given a list of names, concatenate them into a single string separated by spaces
@@ -29,7 +34,9 @@ def concat(name: list):
     #     else:
     #         res = res + i + ' '
     # print(f"===={res}===")
-    return ' '.join(name)
+    return " ".join(name)
+
+
 print(concat(["tem", "ca", "rem"]))
 
 #############################################################################################
@@ -55,7 +62,3 @@ print(concat(["tem", "ca", "rem"]))
 #############################################################################################
 # Write a program to check if a number is prime.
 #############################################################################################
-
-
-
-
