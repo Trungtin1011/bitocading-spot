@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{{ title }}</title>
+    <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='assets/todo.ico')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='assets/style.css')}}" />
+    <script src="{{url_for('static', filename='assets/style.js')}}"></script>
+  </head>
+
+  <body>
+    <div style="margin-top: 50px" class="ui container">
+      <h1 class="ui center aligned header">{{ headline }}</h1>
+
+      <br />
+
+      <div class="ui segment">
+        <p style="font-style: italic; color: red">{{ msg }}</p>
+      </div>
+
+      <br />
+
+      <form class="ui form" action="{{ url_for('add') }}" method="POST">
+        <label class="ui big header">Add a new task: </label>
+
+        <div class="ui action input">
+          <input type="text" name="todoitem" placeholder="Enter task name ..." />
+          <button class="ui blue button" type="submit">Add</button>
+        </div>
+      </form>
+
+      <br />
+
+      <h2>Tasks List</h2>
+
+      {% for todo in todos %}
+      <div class="ui segment">
+        <div class="ui middle aligned divided list">
+          <div class="item">
+            <div class="content">
+              <p class="ui header">{{todo.id }}. {{ todo.text }}</p>
+            </div>
+
+            <div class="right floated content">
+              {% if todo.complete == False %}
+              <span class="ui gray label">Incompleted</span>
+              <a class="ui blue button" href="/complete/{{ todo.id }}">Done</a>
+              <a class="ui red button" href="/delete/{{ todo.id }}">Delete</a>
+
+              {% else %}
+              <span class="ui green label">Completed</span>
+              <a class="ui red button" href="/delete/{{ todo.id }}">Delete</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </body>
+</html>
