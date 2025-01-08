@@ -1,0 +1,26 @@
+categories:
+  - name: Collaboration and Document
+    applications:
+      - title: Wiki
+        icon: Github.png
+        url: https://grafana.com
+      - title: Repos
+        icon: Github.png
+        url: https://grafana.com
+      - title: Pipelines
+        url: https://grafana.com
+        icon: Github.png
+      - title: CD
+        url: https://grafana.com
+        icon: Github.png
+  - name: Self
+    applications:
+      - title: Grafana
+        url: https://grafana.com
+        icon: grafana.png
+      - title: Terraform
+        url: https://terraform.io
+        icon: terraform.png
+      - title: Github
+        url: https://github.com
+        icon: github.png

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Appboard</title>
+    <link rel="icon" type="image/x-icon" href="{{url_for('routes.static', filename='assets/appboard.ico')}}" />
+    <link rel="stylesheet" href="{{url_for('routes.static', filename='assets/style.css')}}" />
+    <script src="{{url_for('routes.static', filename='assets/style.js')}}"></script>
+  </head>
+
+  <body>
+    <div style="margin-top: 50px" class="ui container">
+      <h1 class="ui center aligned header">Applications Dashboard</h1>
+
+      <br />
+
+      {% for cat in categories %}
+      <h2>{{ cat.name }}</h2>
+
+      <div class="ui horizontal segments">
+        {% for app in cat.applications %}
+        <div class="ui segment">
+          <div class="ui two row centered grid">
+            <div class="row">
+              <a href="{{ app.url }}" target="_blank">
+                <!-- <img src="{{ url_for('static', filename='configs/icons/' + app.icon) }}" height="60" /> -->
+                <img src="{{ url_for('routes.icons', icon=app.icon) }}" height="60" />
+              </a>
+            </div>
+            <div class="row">{{ app.title }}</div>
+          </div>
+        </div>
+
+        <br />
+
+        {% endfor %}
+      </div>
+
+      {% endfor %}
+    </div>
+  </body>
+</html>
