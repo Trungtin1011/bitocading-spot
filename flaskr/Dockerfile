@@ -18,8 +18,12 @@ COPY . /app
 # Install dependencies
 RUN pip install --no-cache-dir --trusted-host pypi.python.org -r requirements.txt
 
+# Set environment variables
+ENV PORT=8080
+ENV HOST="0.0.0.0"
+
 # Expose port
 EXPOSE 8080
 
 # Starting application
-ENTRYPOINT ["python3", "main.py"]
+CMD ["sh", "-c", "flask --app flaskr run -p $PORT -h $HOST --no-debug"]

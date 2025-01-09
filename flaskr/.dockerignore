@@ -1,5 +1,5 @@
 # Byte-compiled / optimized / DLL files
-__pycache__/
+**/*__pycache__/*
 *.py[cod]
 *$py.class
 
@@ -170,10 +170,19 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-# OSx Files
+
+# Additional files to ignore
 **/*.DS_Store*
-
-# Data files
 **/*data
-
-**/*instance
+.github
+.git
+.gitignore
+.dockerignore
+README.*
+readme.*
+images
+app.egg-info
+*.pyc
+test*
+tests*
+instance*

@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 from flask import current_app, g
+import click
 
 
 # Ref: https://flask.palletsprojects.com/en/stable/tutorial/database
@@ -28,6 +29,7 @@ def close_db(e=None):
         db.close()
 
 
+# @click.command("init-db")
 def init_db_command():
     """Clear the existing data and create new tables."""
     db = get_db()
