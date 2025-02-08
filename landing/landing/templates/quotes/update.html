@@ -1,0 +1,15 @@
+{% extends 'base.html' %} {% block header %} {% endblock %} {% block content %}
+<center>
+  <form class="ui form" style="max-width: 600px" method="post">
+    <div class="field">
+      <label style="font-size: 16px; text-align: left" style="font-size: 16px; text-align: left" for="title">Quote's Title</label>
+      <input type="text" name="title" id="title" placeholder="Enter quote's title..." value="{{ request.form['title'] or quote['title'] }}" required />
+    </div>
+    <div class="field">
+      <label style="font-size: 16px; text-align: left" for="body">Quote's Body</label>
+      <textarea name="body" id="body" placeholder="Enter quote...">{{ request.form['body'] or quote['body'] }}</textarea>
+    </div>
+    <button class="ui blue button" type="submit">Update quote</button>
+  </form>
+</center>
+{% endblock %}

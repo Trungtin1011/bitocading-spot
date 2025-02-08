@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+<br />
+
+{% block content %}
+
+<center>
+  {% if g.user %}
+  <form class="ui form" style="max-width: 600px" action="{{ url_for('quotes.create_quote') }}" method="post">
+    <div class="field">
+      <label style="font-size: 16px; text-align: left" style="font-size: 16px; text-align: left" for="title">Quote's Title</label>
+      <input type="text" name="title" id="title" placeholder="Enter quote's title..." value="{{ request.form['title'] }}" required />
+    </div>
+    <div class="field">
+      <label style="font-size: 16px; text-align: left" for="body">Quote's Body</label>
+      <textarea name="body" id="body" placeholder="Enter quote...">{{ request.form['body'] }}</textarea>
+    </div>
+    <button class="ui blue button" type="submit">Add quote</button>
+  </form>
+  {% endif %}
+
+  <!-- <div class="ui segment" style="max-width: 900px">
+    <div class="ui divided list">
+      <div class="item">
+        <p class="ui header" style="text-align: left">Example quote</p>
+        <div class="left floated content">
+          <p style="text-align: left; font-style: italic; margin-top: 3px">by __NgoTrungTin__</p>
+        </div>
+        <div class="right floated content">
+          <a class="ui blue label">Edit</a>
+          <a class="ui red label">Delete</a>
+        </div>
+      </div>
+      <div class="item">
+        <p class="ui gray label" style="font-size: 16px; margin-top: 5px">Flask is a lightweight WSGI (Web Server Gateway Interface) web application framework. It is designed to make getting started quick and easy, with the ability to scale up to complex applications. Flask depends on the Werkzeug WSGI toolkit, the Jinja template engine, and the Click CLI toolkit.</p>
+      </div>
+    </div>
+  </div> -->
+
+  {% for quote in quotes %}
+  <div class="ui segment" style="max-width: 900px">
+    <div class="ui divided list">
+      <div class="item">
+        <p class="ui header" style="text-align: left">{{ quote['title'] }}</p>
+        <div class="left floated content">
+          <p style="text-align: left; font-style: italic; margin-top: 3px">by {{ quote['username'] }} on {{ quote['created'].strftime('%Y-%m-%d') }}</p>
+        </div>
+        {% if g.user['id'] == quote['author_id'] %}
+        <div class="right floated content">
+          <a class="ui blue button" href="{{ url_for('quotes.update_quote', id=quote['id']) }}">Edit</a>
+          <a class="ui red button" href="{{ url_for('quotes.delete_quote', id=quote['id']) }}">Delete</a>
+        </div>
+        {% endif %}
+      </div>
+      <div class="item">
+        <p class="ui gray label" style="font-size: 16px; margin-top: 5px">{{ quote['body'] }}</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</center>
+{% endblock content %}

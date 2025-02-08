@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+<br />
+
+{% block content %}
+<center>
+  <div class="ui container">
+    <form class="ui form" style="max-width: 600px" action="{{ url_for('todo.add') }}" method="POST">
+      <div class="field">
+        <label style="font-size: 16px; text-align: left">Add a new task:</label>
+        <div class="ui action input">
+          <input type="text" name="todoitem" placeholder="Enter task name ..." />
+          <button class="ui blue button" type="submit">Add</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <br />
+
+  <div class="ui segment" style="max-width: 900px">
+    <p class="ui medium header" style="text-align: left">To-do Tasks List</p>
+
+    {% for todo in todos %}
+    <div class="ui segment">
+      <div class="ui divided list">
+        <div class="item">
+          <div class="content">
+            <p class="ui header" style="text-align: left">{{todo.id }}. {{ todo.title }}</p>
+          </div>
+
+          <div class="right floated content">
+            <span class="ui yellow label">{{ todo.created }}</span>
+
+            {% if todo.complete == 0 %}
+            <span class="ui gray label">Incompleted</span>
+            <a class="ui green button" href="{{ url_for('todo.complete', id=todo.id ) }}">Done</a>
+            <a class="ui red button" href="{{ url_for('todo.delete', id=todo.id ) }}">Delete</a>
+
+            {% else %}
+            <span class="ui green label">Completed</span>
+            <a class="ui gray button" href="{{ url_for('todo.undone', id=todo.id ) }}">Undone</a>
+            <a class="ui red button" href="{{ url_for('todo.delete', id=todo.id ) }}">Delete</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</center>
+
+<br />
+
+{% endblock content %}

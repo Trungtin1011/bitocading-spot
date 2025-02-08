@@ -1,0 +1,16 @@
+{% extends 'base.html' %} {% block header %} {% endblock %} {% block content %}
+<center>
+  <form class="ui form" style="max-width: 600px" method="post">
+    <div class="field">
+      <label style="font-size: 16px; text-align: left" style="font-size: 16px; text-align: left" for="username">Username</label>
+      <input type="text" name="username" id="username" placeholder="Enter username..." required />
+    </div>
+    <div class="field">
+      <label style="font-size: 16px; text-align: left" style="font-size: 16px; text-align: left" for="password">Password</label>
+      <input type="password" name="password" id="password" placeholder="Enter password..." required />
+    </div>
+    <input class="ui blue button" type="submit" value="Log In" />
+  </form>
+</center>
+
+{% endblock %}
